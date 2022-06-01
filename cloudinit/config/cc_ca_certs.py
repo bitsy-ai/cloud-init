@@ -48,7 +48,7 @@ configuration option ``remove_defaults``.
     Alpine Linux requires the ca-certificates package to be installed in
     order to provide the ``update-ca-certificates`` command.
 """
-distros = ["alpine", "debian", "rhel", "ubuntu"]
+distros = ["alpine", "bitsy","debian", "ubuntu", "rhel"]
 
 meta: MetaSchema = {
     "id": "cc_ca_certs",

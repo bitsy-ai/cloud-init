@@ -246,7 +246,7 @@ class TestCLI:
                 ["all"],
                 [
                     "**Supported distros:** all",
-                    "**Supported distros:** almalinux, alpine, centos, "
+                    "**Supported distros:** almalinux, alpine, bitsy, centos, "
                     "cloudlinux, cos, debian, eurolinux, fedora, freebsd, "
                     "mariner, miraclelinux, "
                     "openbsd, openEuler, OpenCloudOS, openmandriva, "

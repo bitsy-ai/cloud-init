@@ -111,6 +111,7 @@ def render_tmpl(template, mode=None):
     atexit.register(shutil.rmtree, tmpd)
     bname = os.path.basename(template).rstrip(tmpl_ext)
     fpath = os.path.join(tmpd, bname)
+    print("Rendering template {} with --variant={}".format(template, VARIANT))
     if VARIANT:
         subprocess.run(
             [
@@ -229,7 +230,7 @@ class MyEggInfo(egg_info):
 class InitsysInstallData(install):
     init_system = None
     user_options = install.user_options + [
-        # This will magically show up in member variable 'init_sys'
+        # This will magically show up in member variable 'init_system'
         (
             "init-system=",
             None,

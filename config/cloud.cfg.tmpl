@@ -29,13 +29,13 @@ manage_etc_hosts: false
 
 # If this is set, 'root' will not be able to ssh in and they
 # will get a message to login instead as the default $user
-{% if variant in ["freebsd", "photon"] %}
+{% if variant in ["bitsy", "freebsd", "photon"] %}
 disable_root: false
 {% else %}
 disable_root: true
 {% endif %}
 
-{% if variant in ["alpine", "amazon", "fedora", "openEuler", "OpenCloudOS", "openmandriva", "photon", "TencentOS"] or is_rhel %}
+{% if variant in ["alpine", "amazon", "bitsy", "fedora", "openEuler", "OpenCloudOS", "openmandriva", "photon", "TencentOS"] or is_rhel %}
 {% if is_rhel %}
 mount_default_fields: [~, ~, 'auto', 'defaults,nofail,x-systemd.requires=cloud-init.service,_netdev', '0', '2']
 {% else %}
@@ -101,7 +101,7 @@ cloud_init_modules:
  - set_hostname
  - update_hostname
  - update_etc_hosts
-{% if variant in ["alpine", "photon"] %}
+{% if variant in ["alpine", "bitsy", "photon"] %}
  - resolv_conf
 {% endif %}
 {% if not variant.endswith("bsd") %}
@@ -387,4 +387,8 @@ system_info:
 {% elif variant == "openmandriva" %}
    network:
       renderers: ['network-manager', 'networkd']
+{% elif variant in ["bitsy"] %}
+   network:
+      renderers: ['netplan', 'networkd']
+      activators: ['netplan', 'networkd']
 {% endif %}

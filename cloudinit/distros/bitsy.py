@@ -1,0 +1,128 @@
+# Copyright (C) 2022 Bitsy AI Labs
+#
+# Author: Leigh Johnson <leigh@bitsy.ai>
+#
+# This file is part of cloud-init. See LICENSE file for license information.
+
+from cloudinit import distros, helpers
+from cloudinit import log as logging
+from cloudinit import subp, util
+from cloudinit.settings import PER_INSTANCE
+from cloudinit.distros.parsers.hostname import HostnameConf
+
+LOG = logging.getLogger(__name__)
+
+NETWORK_FILE_HEADER = """\
+# This file is generated from information provided by the datasource.  Changes
+# to it will not persist across an instance reboot.  To disable cloud-init's
+# network configuration capabilities, write a file
+# /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg with the following:
+# network: {config: disabled}
+"""
+
+class Distro(distros.Distro):
+    """
+    BitsyLinux is an OpenEmbedded Linux distribution based on the Yocto Project
+    """
+    systemd_hostname_conf_fn = "/etc/hostname"
+    init_cmd = ["systemctl"]
+    network_conf_dir = "/etc/systemd/network/"
+    network_conf_fn = {
+        "netplan": "/etc/netplan/50-cloud-init.yaml",
+    }
+    resolve_conf_fn = "/etc/systemd/resolved.conf"
+    systemd_locale_conf_fn = "/etc/locale.conf"
+    renderer_configs = {
+        "networkd": {
+            "resolv_conf_fn": resolve_conf_fn,
+            "network_conf_dir": network_conf_dir,
+        },
+        "netplan": {
+            "netplan_path": network_conf_fn["netplan"],
+            "netplan_header": NETWORK_FILE_HEADER,
+            "postcmds": True,
+        },
+    }
+
+    def __init__(self, name, cfg, paths):
+        distros.Distro.__init__(self, name, cfg, paths)
+        # This will be used to restrict certain
+        # calls from repeatly happening (when they
+        # should only happen say once per instance...)
+        self._runner = helpers.Runners(paths)
+        self.osfamily = "bitsy"
+        self.default_locale = "en_US.UTF-8"
+        self.system_locale = None
+        cfg["ssh_svcname"] = "sshd.socket"
+
+    def _read_system_hostname(self):
+        sys_hostname = self._read_hostname(self.hostname_conf_fn)
+        return (self.hostname_conf_fn, sys_hostname)
+
+    def _read_hostname_conf(self, filename) -> HostnameConf:
+        conf = HostnameConf(util.load_file(filename))
+        conf.parse()
+        return conf
+
+    def _write_hostname(self, hostname, filename) -> None:
+        if filename and filename.endswith("/previous-hostname"):
+            util.write_file(filename, hostname)
+        else:
+            cmd = ["hostnamectl", "set-hostname", str(hostname)]
+            subp.subp(cmd, capture=False)
+
+    def _read_system_hostname(self):
+        sys_hostname = self._read_hostname(self.systemd_hostname_conf_fn)
+        return (self.systemd_hostname_conf_fn, sys_hostname)
+
+    def _read_hostname(self, filename, default=None):
+        if filename and filename.endswith("/previous-hostname"):
+            return util.load_file(filename).strip()
+
+        cmd = ["hostnamectl", "hostname"]
+        (out, _err) = subp.subp(cmd, capture=True)
+        return out.strip() if out else default
+
+    def apply_locale(self, locale, out_fn=None):
+        if out_fn is not None and out_fn != "/etc/locale.conf":
+            LOG.warning(
+                "Invalid locale_configfile %s, only supported "
+                "value is /etc/locale.conf",
+                out_fn,
+            )
+        cmd = ["localectl", "set-locale", locale]
+        subp.subp(cmd, capture=False)
+
+
+    def install_packages(self, pkglist):
+        self.package_command("install", pkgs=pkglist)
+
+    def package_command(self, command, args=None, pkgs=None):
+        if pkgs is None:
+            pkgs = []
+
+        cmd = ["dnf", "-y"]
+        if args and isinstance(args, str):
+            cmd.append(args)
+        elif args and isinstance(args, list):
+            cmd.extend(args)
+
+        cmd.append(command)
+
+        pkglist = util.expand_package_list("%s-%s", pkgs)
+        cmd.extend(pkglist)
+
+        # Allow the output of this to flow outwards (ie not be captured)
+        subp.subp(cmd, capture=False)
+
+    def set_timezone(self, tz):
+        cmd = ["timedatectl", "set-timezone", tz]
+        subp.subp(cmd, capture=False)
+
+    def update_package_sources(self):
+        self._runner.run(
+            "update-sources",
+            self.package_command,
+            ["makecache"],
+            freq=PER_INSTANCE,
+        )

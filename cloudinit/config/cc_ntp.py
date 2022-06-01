@@ -26,6 +26,7 @@ NR_POOL_SERVERS = 4
 distros = [
     "almalinux",
     "alpine",
+    "bitsy",
     "centos",
     "cloudlinux",
     "cos",
@@ -109,6 +110,9 @@ DISTRO_CLIENT_CONFIG = {
             "packages": [],
             "service_name": "ntpd",
         },
+    },
+    "bitsy": {
+        "ntp": {"service_name": "ntpd"},
     },
     "centos": {
         "ntp": {

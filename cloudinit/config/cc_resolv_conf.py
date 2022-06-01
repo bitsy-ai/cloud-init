@@ -59,6 +59,7 @@ meta: MetaSchema = {
     "description": MODULE_DESCRIPTION,
     "distros": [
         "alpine",
+        "bitsy",
         "fedora",
         "mariner",
         "opensuse",
