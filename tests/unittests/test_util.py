@@ -321,6 +321,22 @@ OS_RELEASE_PHOTON = """\
         BUG_REPORT_URL="https://github.com/vmware/photon/issues"
 """
 
+OS_RELEASE_BITSY = dedent(
+    """\
+    NAME="BitsyLinux"
+    VERSION="4.0-0 (Amber Kirkstone)"
+    VERSION_CODENAME="Amber Kirkstone"
+    ID="bitsy"
+    ID_LIKE="poky yocto openembedded busybox"
+    VERSION_ID="4.0-0"
+    PRETTY_NAME="BitsyLinux 4.0-0 (Amber Kirkstone)"
+    HOME_URL="https://linux.bitsy.ai/"
+    BUG_REPORT_URL="https://github.com/bitsy-ai/meta-bitsy"
+    YOCTO_VERSION="4.0"
+    YOCTO_CODENAME="Kirkstone"
+"""
+)
+
 
 class FakeCloud(object):
     def __init__(self, hostname, fqdn):
