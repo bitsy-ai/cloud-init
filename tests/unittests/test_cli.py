@@ -258,7 +258,7 @@ class TestCLI(test_helpers.FilesystemMockingTestCase):
             self._call_main(["cloud-init", "schema", "--docs", "all"])
             expected_doc_sections = [
                 "**Supported distros:** all",
-                "**Supported distros:** almalinux, alpine, centos, "
+                "**Supported distros:** almalinux, alpine, bitsy, centos, "
                 "cloudlinux, debian, eurolinux, fedora, miraclelinux, "
                 "openEuler, opensuse, photon, rhel, rocky, sles, ubuntu, "
                 "virtuozzo",
