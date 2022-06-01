@@ -46,7 +46,7 @@ can be removed from the system with the configuration option
     ca-certificates package is installed but not if the
     ca-certificates-bundle package is installed.
 """
-distros = ["alpine", "debian", "ubuntu", "rhel"]
+distros = ["alpine", "bitsy","debian", "ubuntu", "rhel"]
 
 meta: MetaSchema = {
     "id": "cc_ca_certs",

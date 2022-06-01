@@ -22,7 +22,7 @@ from cloudinit.settings import PER_INSTANCE
 DEFAULT_KEYBOARD_MODEL = "pc105"
 
 supported_distros = distros.Distro.expand_osfamily(
-    ["arch", "debian", "redhat", "suse"]
+    ["arch", "bitsy", "debian", "redhat", "suse"]
 )
 
 meta: MetaSchema = {
