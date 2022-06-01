@@ -4,6 +4,7 @@ import os
 import sys
 import argparse
 
+
 def main():
     _tdir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
     sys.path.insert(0, _tdir)
@@ -14,6 +15,7 @@ def main():
         "alpine",
         "amazon",
         "arch",
+        "bitsy",
         "centos",
         "cloudlinux",
         "debian",

@@ -341,6 +341,21 @@ OS_RELEASE_OPENMANDRIVA = dedent(
 """
 )
 
+OS_RELEASE_BITSY = dedent(
+    """\
+    NAME="BitsyLinux"
+    VERSION="4.0-0 (Amber Kirkstone)"
+    VERSION_CODENAME="Amber Kirkstone"
+    ID="bitsy"
+    ID_LIKE="poky yocto openembedded busybox"
+    VERSION_ID="4.0-0"
+    PRETTY_NAME="BitsyLinux 4.0-0 (Amber Kirkstone)"
+    HOME_URL="https://linux.bitsy.ai/"
+    BUG_REPORT_URL="https://github.com/bitsy-ai/meta-bitsy"
+    YOCTO_VERSION="4.0"
+    YOCTO_CODENAME="Kirkstone"
+"""
+)
 
 class TestUtil:
     def test_parse_mount_info_no_opts_no_arg(self):

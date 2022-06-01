@@ -23,6 +23,7 @@ NR_POOL_SERVERS = 4
 distros = [
     "almalinux",
     "alpine",
+    "bitsy",
     "centos",
     "cloudlinux",
     "debian",
@@ -95,6 +96,9 @@ DISTRO_CLIENT_CONFIG = {
         "chrony": {
             "service_name": "chronyd",
         },
+    },
+    "bitsy": {
+        "ntp": {"service_name": "ntpd"},
     },
     "debian": {
         "chrony": {
