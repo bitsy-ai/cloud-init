@@ -80,7 +80,8 @@ class Distro(distros.Distro):
         if filename and filename.endswith("/previous-hostname"):
             return util.load_file(filename).strip()
 
-        _ret, out, _err = self.exec_cmd(["hostnamectl", "hostname"])
+        cmd = ["hostnamectl", "hostname"]
+        (out, _err) = subp.subp(cmd, capture=True)
         return out.strip() if out else default
 
     def apply_locale(self, locale, out_fn=None):
