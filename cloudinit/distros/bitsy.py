@@ -24,7 +24,7 @@ class Distro(distros.Distro):
     """
     BitsyLinux is an OpenEmbedded Linux distribution based on the Yocto Project
     """
-
+    systemd_hostname_conf_fn = "/etc/hostname"
     init_cmd = ["systemctl"]
     network_conf_dir = "/etc/systemd/network/"
     network_conf_fn = {
@@ -66,28 +66,22 @@ class Distro(distros.Distro):
         return conf
 
     def _write_hostname(self, hostname, filename) -> None:
-        conf = None
-        try:
-            # Try to update the previous one
-            # so lets see if we can read it first.
-            conf = self._read_hostname_conf(filename)
-        except IOError as e:
-            LOG.error("Error opening file %s - %s", filename, e)
-        if not conf:
-            conf = HostnameConf("")
-        conf.set_hostname(hostname)
-        util.write_file(filename, str(conf), omode="w", mode=0o644)
+        if filename and filename.endswith("/previous-hostname"):
+            util.write_file(filename, hostname)
+        else:
+            cmd = ["hostnamectl", "set-hostname", str(hostname)]
+            subp.subp(cmd, capture=False)
+
+    def _read_system_hostname(self):
+        sys_hostname = self._read_hostname(self.systemd_hostname_conf_fn)
+        return (self.systemd_hostname_conf_fn, sys_hostname)
 
     def _read_hostname(self, filename, default=None):
-        hostname = None
-        try:
-            conf: HostnameConf = self._read_hostname_conf(filename)
-            hostname = conf.hostname
-        except IOError as e:
-            LOG.error("Error opening file %s - %s", filename, e)
-        if not hostname:
-            return default
-        return hostname
+        if filename and filename.endswith("/previous-hostname"):
+            return util.load_file(filename).strip()
+
+        _ret, out, _err = self.exec_cmd(["hostnamectl", "hostname"])
+        return out.strip() if out else default
 
     def apply_locale(self, locale, out_fn=None):
         if out_fn is not None and out_fn != "/etc/locale.conf":
