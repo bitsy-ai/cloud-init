@@ -54,7 +54,7 @@ class Distro(distros.Distro):
         self.osfamily = "bitsy"
         self.default_locale = "en_US.UTF-8"
         self.system_locale = None
-        cfg["ssh_svcname"] = "sshd.service"
+        cfg["ssh_svcname"] = "sshd.socket"
 
     def _read_system_hostname(self):
         sys_hostname = self._read_hostname(self.hostname_conf_fn)
